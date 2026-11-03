@@ -1,7 +1,8 @@
-@extends('../layouts.master')
+@extends('layouts.front')
 @section('title', $hotel->name)
 @section('meta_description', 'Lihat kamar, fasilitas, ulasan, dan lokasi '.$hotel->name.'.')
-@section('content')
+@section('hide_bottom_menu', '1')
+@section('front')
     <section id="content"
         class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[122px] lg:pb-16 relative">
         <div id="Top-bar"

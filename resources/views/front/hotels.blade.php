@@ -1,8 +1,8 @@
-@extends('../layouts.master')
+@extends('layouts.front')
 @section('title', 'Search Hotels')
-@section('content')
+@section('front')
     <section id="content"
-        class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[122px] lg:pb-16 relative">
+        class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-6 lg:pb-16 relative">
         <div class="w-full h-[233px] lg:h-[320px] absolute top-0 overflow-hidden">
             <img src="{{ asset('assets/images/backgrounds/BG-1.png') }}" class="w-full h-full object-cover" alt="backgrounds">
         </div>

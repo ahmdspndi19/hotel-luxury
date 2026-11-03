@@ -1,0 +1,10 @@
+@extends('layouts.master')
+@section('content')
+    @include('partials.front-nav')
+    @yield('front')
+    @include('partials.front-footer')
+    @hasSection('hide_bottom_menu')
+    @else
+        @include('partials.front-bottom-menu')
+    @endif
+@endsection

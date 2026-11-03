@@ -90,6 +90,9 @@
                     
                     <div class="flex flex-col">
                         @forelse($hotel->rooms as $room)
+                        @php
+                            $left = $room->availableRooms(today(), today()->addDay());
+                        @endphp
                         <div class="item-card flex flex-row justify-between items-center py-4 border-b border-gray-100 hover:bg-gray-50 -mx-4 px-4 transition-all duration-200">
                             <div class="flex flex-row items-center gap-x-4 w-2/5">
                                 <img src="{{Storage::url($room->photo)}}" alt="" class="rounded-lg object-cover w-[100px] h-[75px] shadow-sm border border-gray-100">
@@ -107,6 +110,12 @@
                                 <p class="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Price / Night</p>
                                 <h3 class="text-indigo-950 text-base font-bold">
                                     Rp {{number_format($room->price, 0, ',', '.')}}
+                                </h3>
+                            </div>
+                            <div class="hidden md:flex flex-col w-1/5">
+                                <p class="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Sisa Malam Ini</p>
+                                <h3 class="text-base font-bold {{ $left === 0 ? 'text-red-600' : 'text-indigo-950' }}">
+                                    {{ $left }} / {{ $room->total_rooms }} unit
                                 </h3>
                             </div>
                             <div class="hidden md:flex flex-row items-center justify-end gap-x-3 w-1/5">

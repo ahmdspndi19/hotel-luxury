@@ -1,8 +1,8 @@
-@extends('../layouts.master')
+@extends('layouts.front')
 @section('title', 'Choose a Room')
-@section('content')
+@section('front')
 
-<section id="content" class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[122px] lg:pb-16 relative">
+<section id="content" class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-6 lg:pb-16 relative">
     <div class="w-full h-[165px] lg:h-[200px] absolute top-0 bg-[linear-gradient(244.6deg,_#7545FB_14.17%,_#2A3FCC_92.43%)]">
     </div>
     <div class="relative z-10 px-[18px] lg:px-8 w-full lg:max-w-7xl lg:mx-auto flex flex-col gap-6 mt-[60px] lg:mt-10">
@@ -22,6 +22,9 @@
       <div id="result" class="result-card-container flex flex-col gap-[18px] lg:grid lg:grid-cols-3 lg:gap-6">
 
         @forelse ($hotel->rooms as $room)
+        @php
+          $left = (session('checkin_at') && session('checkout_at')) ? $room->availableRooms(session('checkin_at'), session('checkout_at')) : null;
+        @endphp
         <div class="card-result bg-white rounded-xl overflow-hidden flex flex-col lg:h-full lg:hover:shadow-[0_8px_30px_0_#0A093220] lg:transition-all lg:duration-300">
           <div class="thumbnail-container w-full aspect-[357/160] overflow-hidden flex shrink-0">
             <img src="{{ Storage::url($room->photo) }}" class="object-cover w-full h-full" alt="thumbnail">
@@ -30,6 +33,13 @@
             <div class="title-container flex flex-col gap-[2px]">
               <p class="font-semibold">{{ $room->name }}</p>
               <p class="font-medium text-sm leading-[21px] text-[#757C98]">Max. {{ $room->total_people }} Adult /Room</p>
+              @if ($left === null)
+                <p class="font-medium text-xs leading-[18px] text-[#757C98]">Pilih tanggal untuk melihat sisa kamar</p>
+              @elseif ($left === 0)
+                <p class="font-semibold text-xs leading-[18px] text-[#F93F6C]">Kamar habis di tanggal ini</p>
+              @else
+                <p class="font-semibold text-xs leading-[18px] {{ $left <= 3 ? 'text-[#F98D3F]' : 'text-[#54A917]' }}">Sisa {{ $left }} kamar</p>
+              @endif
             </div>
             <div class="facilities-container rounded-xl border border-[#DCDFE6] overflow-hidden">
               <div class="flex flex-col gap-4 p-4 pb-0 mb-4">
@@ -63,9 +73,6 @@
               </div>
               <form method="POST" action="{{ route('front.hotel.room.book', [$hotel->slug, $room->id]) }}" onsubmit="const b=this.querySelector('button[type=submit]'); if(b){ if(b.dataset.sent){return false;} b.dataset.sent=1; b.classList.add('opacity-60'); }">
                 @csrf
-              @php
-                $left = (session('checkin_at') && session('checkout_at')) ? $room->availableRooms(session('checkin_at'), session('checkout_at')) : null;
-              @endphp
               @if ($left === 0)
                 <button type="button" disabled class="w-[138px] h-[48px] bg-[#DCDFE6] p-[12px_24px] rounded-full text-nowrap text-[#757C98] font-semibold text-sm leading-[21px] flex items-center justify-center">Sold Out</button>
               @else

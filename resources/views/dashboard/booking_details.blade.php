@@ -1,13 +1,14 @@
-@extends('../layouts.master')
+@extends('layouts.front')
 @section('title', 'Booking Details')
 @section('robots', 'noindex,nofollow')
-@section('content')
+@section('hide_bottom_menu', '1')
+@section('front')
 
-<section id="content" class="max-w-[640px] w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[184px] relative">
+<section id="content" class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[184px] lg:pb-16 relative">
     <div class="w-full h-[249px] absolute top-0 bg-[linear-gradient(244.6deg,_#7545FB_14.17%,_#2A3FCC_92.43%)]">
     </div>
-    <div class="relative z-10 flex flex-col gap-6 mt-[60px]">
-      <div class="top-menu flex justify-between items-center px-[18px]">
+    <div class="relative z-10 flex flex-col gap-6 mt-[60px] lg:mt-10 lg:w-full lg:max-w-3xl lg:mx-auto lg:px-8">
+      <div class="top-menu flex justify-between items-center px-[18px] lg:px-0">
         <a href="{{ route('dashboard.my-bookings') }}" class="">
           <div class="w-[42px] h-[42px] flex shrink-0">
             <img src="{{asset('assets/images/icons/back.svg')}}" alt="icon">
@@ -18,7 +19,7 @@
         </div>
       </div>
       <div id="Details" class="group result-card-container flex flex-col gap-6">
-        <div class="bg-white flex flex-col p-4 gap-6 rounded-xl mx-[18px]">
+        <div class="bg-white flex flex-col p-4 lg:p-6 gap-6 rounded-xl mx-[18px] lg:mx-0">
           <div id="Header" class="flex items-center justify-between gap-[2px]">
             <p class="font-semibold">Hotel Details</p>
             <p class="font-semibold text-xs leading-[18px] text-[#F8F8F8] rounded-full p-[6px_12px] w-fit" style="background: {{ $hotelBooking->status_color }}">{{ $hotelBooking->status_label }}</p>
@@ -146,9 +147,9 @@
             <p class="font-medium text-xs leading-[18px] text-[#757C98]">{{ $hotelBooking->hotel->address }}</p>
           </div>
         </div>
-        <div id="Bottom-nav" class="fixed bottom-0 w-full max-w-[640px] flex flex-col p-[24px_18px] border-t border-[#DCDFE6] gap-4 bg-white">
+        <div id="Bottom-nav" class="fixed bottom-0 w-full max-w-[640px] flex flex-col p-[24px_18px] border-t border-[#DCDFE6] gap-4 bg-white lg:static lg:max-w-none lg:p-0 lg:border-0 lg:bg-transparent">
           <a href="" class="flex items-center justify-center font-semibold p-[12px_24px] rounded-lg w-full h-12 bg-[#4041DA] text-white">Contact Customer Service</a>
-          <a href="home-login.html" class="flex items-center justify-center font-semibold p-[12px_24px] rounded-lg w-full h-12 bg-[#4041DA17] text-[#4041DA]">Back to Homepage</a>
+          <a href="{{ route('front.index') }}" class="flex items-center justify-center font-semibold p-[12px_24px] rounded-lg w-full h-12 bg-[#4041DA17] text-[#4041DA]">Back to Homepage</a>
         </div>
       </div>
     </div>

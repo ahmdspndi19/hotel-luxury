@@ -25,6 +25,7 @@ class HotelBookingController extends Controller
             'status' => ['nullable', Rule::in([
                 HotelBooking::PENDING, HotelBooking::WAITING, HotelBooking::PAID,
                 HotelBooking::REJECTED, HotelBooking::EXPIRED, HotelBooking::CANCELLED,
+                HotelBooking::CHECKED_IN, HotelBooking::CHECKED_OUT, HotelBooking::NO_SHOW,
             ])],
         ]);
 
@@ -116,12 +117,87 @@ class HotelBookingController extends Controller
             ->with('status', 'Bukti ditolak. Tamu bisa upload ulang.');
     }
 
+    public function checkIn(HotelBooking $hotelBooking)
+    {
+        $done = DB::transaction(function () use ($hotelBooking) {
+            $locked = HotelBooking::whereKey($hotelBooking->id)->lockForUpdate()->first();
+
+            if (! $locked || ! $locked->can_check_in) {
+                return false;
+            }
+
+            $locked->update([
+                'status' => HotelBooking::CHECKED_IN,
+                'checked_in_at' => now(),
+            ]);
+
+            return true;
+        });
+
+        if (! $done) {
+            return redirect()->route('admin.hotel_bookings.show', $hotelBooking)
+                ->withErrors(['status' => 'Tamu belum bisa check-in. Booking harus lunas dan tanggalnya sudah masuk masa menginap.']);
+        }
+
+        return redirect()->route('admin.hotel_bookings.show', $hotelBooking)
+            ->with('status', 'Tamu sudah check-in.');
+    }
+
+    public function checkOut(HotelBooking $hotelBooking)
+    {
+        $done = DB::transaction(function () use ($hotelBooking) {
+            $locked = HotelBooking::whereKey($hotelBooking->id)->lockForUpdate()->first();
+
+            if (! $locked || ! $locked->can_check_out) {
+                return false;
+            }
+
+            $locked->update([
+                'status' => HotelBooking::CHECKED_OUT,
+                'checked_out_at' => now(),
+            ]);
+
+            return true;
+        });
+
+        if (! $done) {
+            return redirect()->route('admin.hotel_bookings.show', $hotelBooking)
+                ->withErrors(['status' => 'Booking ini belum check-in, jadi belum bisa check-out.']);
+        }
+
+        return redirect()->route('admin.hotel_bookings.show', $hotelBooking)
+            ->with('status', 'Tamu sudah check-out. Kamar kembali tersedia.');
+    }
+
+    public function noShow(HotelBooking $hotelBooking)
+    {
+        $done = DB::transaction(function () use ($hotelBooking) {
+            $locked = HotelBooking::whereKey($hotelBooking->id)->lockForUpdate()->first();
+
+            if (! $locked || ! $locked->can_mark_no_show) {
+                return false;
+            }
+
+            $locked->update(['status' => HotelBooking::NO_SHOW]);
+
+            return true;
+        });
+
+        if (! $done) {
+            return redirect()->route('admin.hotel_bookings.show', $hotelBooking)
+                ->withErrors(['status' => 'Booking ini belum bisa ditandai tidak datang.']);
+        }
+
+        return redirect()->route('admin.hotel_bookings.show', $hotelBooking)
+            ->with('status', 'Booking ditandai tamu tidak datang. Kamar kembali tersedia.');
+    }
+
     /**
      * Soft delete. Booking lunas yang belum selesai menginap tidak boleh dihapus.
      */
     public function destroy(HotelBooking $hotelBooking)
     {
-        if ($hotelBooking->status === HotelBooking::PAID
+        if (in_array($hotelBooking->status, [HotelBooking::PAID, HotelBooking::CHECKED_IN], true)
             && $hotelBooking->checkout_at->gte(now()->startOfDay())) {
             return redirect()->route('admin.hotel_bookings.index')
                 ->withErrors(['booking' => 'Booking lunas baru bisa dihapus setelah tanggal check-out.']);

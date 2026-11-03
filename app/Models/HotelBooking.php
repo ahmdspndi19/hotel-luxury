@@ -17,6 +17,11 @@ class HotelBooking extends Model
     public const REJECTED = 'rejected';
     public const EXPIRED = 'expired';
     public const CANCELLED = 'cancelled';
+    public const CHECKED_IN = 'checked_in';
+    public const CHECKED_OUT = 'checked_out';
+    public const NO_SHOW = 'no_show';
+
+    public const REVENUE_STATUSES = [self::PAID, self::CHECKED_IN, self::CHECKED_OUT, self::NO_SHOW];
 
     /** Batas waktu bayar (jam) sejak booking dibuat atau bukti ditolak. */
     public const PAYMENT_WINDOW_HOURS = 2;
@@ -33,6 +38,8 @@ class HotelBooking extends Model
         'status',
         'expires_at',
         'paid_at',
+        'checked_in_at',
+        'checked_out_at',
         'reject_reason',
         'proof',
     ];
@@ -42,6 +49,8 @@ class HotelBooking extends Model
         'checkout_at' => 'date',
         'expires_at' => 'datetime',
         'paid_at' => 'datetime',
+        'checked_in_at' => 'datetime',
+        'checked_out_at' => 'datetime',
     ];
 
     public function customer(){
@@ -63,8 +72,7 @@ class HotelBooking extends Model
     /** Boleh kirim review: lunas, sudah check-out, belum pernah review. */
     public function getCanReviewAttribute(): bool
     {
-        return $this->status === self::PAID
-            && $this->checkout_at->lt(now()->startOfDay())
+        return $this->status === self::CHECKED_OUT
             && ! $this->review;
     }
 
@@ -76,7 +84,7 @@ class HotelBooking extends Model
     public function scopeBlocking(Builder $query): Builder
     {
         return $query->where(function (Builder $q) {
-            $q->whereIn('status', [self::PAID, self::WAITING])
+            $q->whereIn('status', [self::PAID, self::WAITING, self::CHECKED_IN])
                 ->orWhere(function (Builder $q2) {
                     $q2->whereIn('status', [self::PENDING, self::REJECTED])
                         ->where(function (Builder $q3) {
@@ -113,6 +121,9 @@ class HotelBooking extends Model
             self::REJECTED => 'Payment Rejected',
             self::EXPIRED => 'Expired',
             self::CANCELLED => 'Cancelled',
+            self::CHECKED_IN => 'Checked In',
+            self::CHECKED_OUT => 'Completed',
+            self::NO_SHOW => 'No Show',
             default => ucfirst((string) $this->status),
         };
     }
@@ -126,6 +137,9 @@ class HotelBooking extends Model
             self::REJECTED => 'Payment Rejected',
             self::EXPIRED => 'Booking Expired',
             self::CANCELLED => 'Booking Cancelled',
+            self::CHECKED_IN => 'Enjoy Your Stay',
+            self::CHECKED_OUT => 'Stay Completed',
+            self::NO_SHOW => 'Guest Did Not Arrive',
             default => 'Booking',
         };
     }
@@ -133,7 +147,9 @@ class HotelBooking extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->effective_status) {
-            self::PAID => '#54A917',
+            self::PAID, self::CHECKED_OUT => '#54A917',
+            self::CHECKED_IN => '#4041DA',
+            self::NO_SHOW => '#F93F6C',
             self::WAITING, self::PENDING => '#F98D3F',
             self::REJECTED => '#F93F6C',
             default => '#757C98',
@@ -145,10 +161,28 @@ class HotelBooking extends Model
     {
         $status = $this->effective_status;
 
-        if (in_array($status, [self::PENDING, self::REJECTED, self::EXPIRED, self::CANCELLED], true)) {
+        if (in_array($status, [self::PENDING, self::REJECTED, self::EXPIRED, self::CANCELLED, self::CHECKED_OUT, self::NO_SHOW], true)) {
             return true;
         }
 
         return $status === self::PAID && $this->checkout_at->lt(now()->startOfDay());
+    }
+
+    public function getCanCheckInAttribute(): bool
+    {
+        return $this->status === self::PAID
+            && $this->checkin_at->lte(today())
+            && $this->checkout_at->gt(today());
+    }
+
+    public function getCanCheckOutAttribute(): bool
+    {
+        return $this->status === self::CHECKED_IN;
+    }
+
+    public function getCanMarkNoShowAttribute(): bool
+    {
+        return $this->status === self::PAID
+            && $this->checkin_at->lte(today());
     }
 }

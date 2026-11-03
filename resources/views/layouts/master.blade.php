@@ -10,11 +10,11 @@
     <meta name="robots" content="@yield('robots', 'index,follow')">
     <meta name="description" content="@yield('meta_description', 'Cari dan pesan hotel dengan mudah: bandingkan kamar, cek ketersediaan, dan booking dalam beberapa langkah.')">
 
-    <title>@hasSection('title')@yield('title') · @endif{{ config('app.name', 'Hotel Luxury') }}</title>
+    <title>@hasSection('title')@yield('title') · @endif Luxury</title>
 
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ config('app.name', 'Hotel Luxury') }}">
-    <meta property="og:title" content="@hasSection('title')@yield('title') · @endif{{ config('app.name', 'Hotel Luxury') }}">
+    <meta property="og:site_name" content="Luxury">
+    <meta property="og:title" content="@hasSection('title')@yield('title') · @endif Luxury">
     <meta property="og:description" content="@yield('meta_description', 'Cari dan pesan hotel dengan mudah: bandingkan kamar, cek ketersediaan, dan booking dalam beberapa langkah.')">
     <meta property="og:url" content="{{ url()->current() }}">
     @stack('meta')
@@ -25,6 +25,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
+    <script>
+        document.addEventListener('error', function (e) {
+            var img = e.target;
+            if (img.tagName !== 'IMG' || img.dataset.fallback) {
+                return;
+            }
+            img.dataset.fallback = '1';
+            img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#E5E7EB"/></svg>');
+        }, true);
+    </script>
     @stack('before-styles')
     {{-- import css (dimuat sekali; style tambahan halaman di-push sesudahnya agar menang di cascade) --}}
     <link href="{{ asset('output.css') }}" rel="stylesheet">

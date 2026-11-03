@@ -10,16 +10,19 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRoomController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Middleware\KeepAdminInPanel;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [FrontController::class, 'index'])->name('front.index');
-Route::get('/hotels', [FrontController::class, 'hotels'])->name('front.hotels');
-Route::post('/hotels/search', [FrontController::class, 'search_hotels'])
-    ->middleware('throttle:search')
-    ->name('front.search.hotels');
-Route::get('/hotels/list/{keyword}', [FrontController::class, 'list_hotels'])->name('front.hotels.list');
-Route::get('/hotels/details/{hotel:slug}', [FrontController::class, 'hotel_details'])->name('front.hotels.details');
-Route::get('/hotels/details/{hotel:slug}/rooms', [FrontController::class, 'hotel_rooms'])->name('front.hotels.rooms');
+Route::middleware(KeepAdminInPanel::class)->group(function () {
+    Route::get('/', [FrontController::class, 'index'])->name('front.index');
+    Route::get('/hotels', [FrontController::class, 'hotels'])->name('front.hotels');
+    Route::post('/hotels/search', [FrontController::class, 'search_hotels'])
+        ->middleware('throttle:search')
+        ->name('front.search.hotels');
+    Route::get('/hotels/list/{keyword}', [FrontController::class, 'list_hotels'])->name('front.hotels.list');
+    Route::get('/hotels/details/{hotel:slug}', [FrontController::class, 'hotel_details'])->name('front.hotels.details');
+    Route::get('/hotels/details/{hotel:slug}/rooms', [FrontController::class, 'hotel_rooms'])->name('front.hotels.rooms');
+});
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -39,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookings/{hotelBooking}/proof', [BookingProofController::class, 'show'])
         ->name('bookings.proof');
 
-    Route::middleware('can:checkout hotels')->group(function () {
+    Route::middleware([KeepAdminInPanel::class, 'can:checkout hotels'])->group(function () {
         Route::post('/hotels/{hotel:slug}/{hotel_room}/book', [FrontController::class, 'hotel_room_book'])
             ->middleware('throttle:booking')
             ->name('front.hotel.room.book');
@@ -52,7 +55,7 @@ Route::middleware('auth')->group(function () {
             ->name('front.book_finish');
     });
 
-    Route::middleware('can:view hotel bookings')->group(function () {
+    Route::middleware([KeepAdminInPanel::class, 'can:view hotel bookings'])->group(function () {
         Route::get('/dashboard/my-bookings', [DashboardController::class, 'my_bookings'])
             ->name('dashboard.my-bookings');
         Route::get('/dashboard/my-bookings/{hotelBooking}', [DashboardController::class, 'booking_details'])
@@ -101,6 +104,12 @@ Route::middleware('auth')->group(function () {
                 ->only(['index', 'show', 'update', 'destroy']);
             Route::put('hotel_bookings/{hotelBooking}/reject', [HotelBookingController::class, 'reject'])
                 ->name('hotel_bookings.reject');
+            Route::put('hotel_bookings/{hotelBooking}/check-in', [HotelBookingController::class, 'checkIn'])
+                ->name('hotel_bookings.check_in');
+            Route::put('hotel_bookings/{hotelBooking}/check-out', [HotelBookingController::class, 'checkOut'])
+                ->name('hotel_bookings.check_out');
+            Route::put('hotel_bookings/{hotelBooking}/no-show', [HotelBookingController::class, 'noShow'])
+                ->name('hotel_bookings.no_show');
         });
 
     });

@@ -46,6 +46,37 @@
                         </form>
                     </div>
                     @endif
+                    @if($hotelBooking->can_check_in || $hotelBooking->can_check_out || $hotelBooking->can_mark_no_show)
+                    <div class="flex flex-col gap-3 items-end">
+                        @if($hotelBooking->can_check_in)
+                        <form action="{{ route('admin.hotel_bookings.check_in', $hotelBooking) }}" method="POST" class="m-0">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="font-semibold py-2 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all duration-300 shadow-sm">
+                                Check-in Tamu
+                            </button>
+                        </form>
+                        @endif
+                        @if($hotelBooking->can_check_out)
+                        <form action="{{ route('admin.hotel_bookings.check_out', $hotelBooking) }}" method="POST" class="m-0">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="font-semibold py-2 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all duration-300 shadow-sm">
+                                Check-out Tamu
+                            </button>
+                        </form>
+                        @endif
+                        @if($hotelBooking->can_mark_no_show)
+                        <form action="{{ route('admin.hotel_bookings.no_show', $hotelBooking) }}" method="POST" class="m-0" onsubmit="return confirm('Tandai tamu tidak datang?')">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="font-semibold py-2 px-6 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-full transition-all duration-300">
+                                Tamu Tidak Datang
+                            </button>
+                        </form>
+                        @endif
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Room Info -->
@@ -79,6 +110,12 @@
                             </span>
                             @if($hotelBooking->reject_reason)
                             <p class="text-sm text-red-600 mt-2">Alasan: {{ $hotelBooking->reject_reason }}</p>
+                            @endif
+                            @if($hotelBooking->checked_in_at)
+                            <p class="text-sm text-slate-600 mt-2">Check-in: {{ $hotelBooking->checked_in_at->format('d M Y, H:i') }}</p>
+                            @endif
+                            @if($hotelBooking->checked_out_at)
+                            <p class="text-sm text-slate-600 mt-1">Check-out: {{ $hotelBooking->checked_out_at->format('d M Y, H:i') }}</p>
                             @endif
                             @if($hotelBooking->expires_at && $hotelBooking->isPayable())
                             <p class="text-sm text-orange-600 mt-2">Batas bayar: {{ $hotelBooking->expires_at->format('d M Y, H:i') }}</p>

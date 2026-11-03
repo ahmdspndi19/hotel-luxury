@@ -21,7 +21,7 @@
                     <form method="GET" class="mb-4 flex items-center gap-3">
                         <select name="status" onchange="this.form.submit()" class="rounded-lg border-gray-300 text-sm">
                             <option value="">Semua status</option>
-                            @foreach (['waiting_verification' => 'Menunggu verifikasi', 'pending' => 'Menunggu pembayaran', 'paid' => 'Lunas', 'rejected' => 'Ditolak', 'expired' => 'Kedaluwarsa', 'cancelled' => 'Dibatalkan'] as $value => $label)
+                            @foreach (['waiting_verification' => 'Menunggu verifikasi', 'pending' => 'Menunggu pembayaran', 'paid' => 'Lunas', 'rejected' => 'Ditolak', 'expired' => 'Kedaluwarsa', 'cancelled' => 'Dibatalkan', 'checked_in' => 'Sedang menginap', 'checked_out' => 'Selesai menginap', 'no_show' => 'Tidak datang'] as $value => $label)
                                 <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
                             @endforeach
                         </select>

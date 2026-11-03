@@ -1,12 +1,12 @@
-@extends('../layouts.master')
+@extends('layouts.front')
 @section('title', 'My Bookings')
 @section('robots', 'noindex,nofollow')
-@section('content')
+@section('front')
 
-<section id="content" class="max-w-[640px] w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[122px] relative">
-    <div class="w-full h-[203px] absolute top-0 bg-[linear-gradient(244.6deg,_#7545FB_14.17%,_#2A3FCC_92.43%)]">
+<section id="content" class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-6 lg:pb-16 relative">
+    <div class="w-full h-[203px] lg:h-[220px] absolute top-0 bg-[linear-gradient(244.6deg,_#7545FB_14.17%,_#2A3FCC_92.43%)]">
     </div>
-    <div class="relative z-10 px-[18px] flex flex-col gap-6 mt-[60px] flex-1">
+    <div class="relative z-10 px-[18px] lg:px-8 w-full lg:max-w-5xl lg:mx-auto flex flex-col gap-6 mt-[60px] lg:mt-10 flex-1">
       <div class="top-menu flex justify-between items-center">
         <div class="dummy-spacer w-[42px] h-[42px] flex shrink-0">
         </div>
@@ -101,54 +101,6 @@
         @if ($mybookings->hasPages())
         <div class="pt-2">{{ $mybookings->links() }}</div>
         @endif
-      </div>
-    </div>
-    <div id="Menu-bar" class="fixed bottom-[24px] px-[18px] max-w-[640px] w-full z-30">
-      <div class="bg-white p-[14px_12px] rounded-full flex items-center justify-center gap-8 shadow-[0_8px_30px_0_#0A093212]">
-        <a href="{{ route('front.index') }}">
-          <div class="flex flex-col gap-1 items-center">
-            <div class="w-6 h-6 flex shrink-0">
-              <img src="{{asset('assets/images/icons/home-nonactive.svg')}}" alt="icon">
-            </div>
-            <p class="text-xs leading-[18px] font-semibold text-[#757C98]">Home</p>
-          </div>
-        </a>
-        <a href="{{ route('front.hotels') }}">
-          <div class="flex flex-col gap-1 items-center">
-            <div class="w-6 h-6 flex shrink-0">
-              <img src="{{asset('assets/images/icons/search-nonactive.svg')}}" alt="icon">
-            </div>
-            <p class="text-xs leading-[18px] font-medium text-[#757C98]">Search</p>
-          </div>
-        </a>
-        <a href="{{ route('dashboard.my-bookings') }}">
-          <div class="flex flex-col gap-1 items-center">
-            <div class="w-6 h-6 flex shrink-0">
-              <img src="{{asset('assets/images/icons/activity-active.svg')}}" alt="icon">
-            </div>
-            <p class="text-xs leading-[18px] font-medium text-[#4041DA]">Activity</p>
-          </div>
-        </a>
-        @auth
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button type="submit" class="flex flex-col gap-1 items-center">
-            <div class="w-6 h-6 flex shrink-0">
-              <img src="{{ asset('assets/images/icons/settings-nonactive.svg') }}" alt="icon">
-            </div>
-            <p class="text-xs leading-[18px] font-medium text-[#F93F6C]">Logout</p>
-          </button>
-        </form>
-        @else
-        <a href="{{ route('login') }}">
-          <div class="flex flex-col gap-1 items-center">
-            <div class="w-6 h-6 flex shrink-0">
-              <img src="{{ asset('assets/images/icons/settings-nonactive.svg') }}" alt="icon">
-            </div>
-            <p class="text-xs leading-[18px] font-medium text-[#757C98]">Login</p>
-          </div>
-        </a>
-        @endauth
       </div>
     </div>
   </section>

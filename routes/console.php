@@ -13,3 +13,8 @@ Schedule::command('bookings:expire')
     ->withoutOverlapping()
     ->onOneServer()
     ->runInBackground();
+
+Schedule::command('bookings:close-stays')
+    ->dailyAt('01:00')
+    ->withoutOverlapping()
+    ->onOneServer();

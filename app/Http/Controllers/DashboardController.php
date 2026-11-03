@@ -22,11 +22,14 @@ class DashboardController extends Controller
             $stats = [
                 'total_bookings' => HotelBooking::count(),
                 'active_hotels' => Hotel::count(),
-                'total_revenue' => (int) HotelBooking::where('status', HotelBooking::PAID)->sum('total_amount'),
+                'total_revenue' => (int) HotelBooking::whereIn('status', HotelBooking::REVENUE_STATUSES)->sum('total_amount'),
                 'total_customers' => User::role('customer')->count(),
                 'waiting' => HotelBooking::where('status', HotelBooking::WAITING)->count(),
                 'today' => HotelBooking::whereDate('created_at', today())->count(),
-                'month_revenue' => (int) HotelBooking::where('status', HotelBooking::PAID)
+                'arrivals_today' => HotelBooking::where('status', HotelBooking::PAID)->whereDate('checkin_at', today())->count(),
+                'in_house' => HotelBooking::where('status', HotelBooking::CHECKED_IN)->count(),
+                'departures_today' => HotelBooking::where('status', HotelBooking::CHECKED_IN)->whereDate('checkout_at', today())->count(),
+                'month_revenue' => (int) HotelBooking::whereIn('status', HotelBooking::REVENUE_STATUSES)
                     ->whereBetween('paid_at', [now()->startOfMonth(), now()->endOfMonth()])
                     ->sum('total_amount'),
             ];

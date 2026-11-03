@@ -1,8 +1,9 @@
-@extends('../layouts.master')
+@extends('layouts.front')
 @section('title', 'Payment')
 @section('robots', 'noindex,nofollow')
 
-@section('content')
+@section('hide_bottom_menu', '1')
+@section('front')
     <section id="content" class="max-w-[640px] lg:max-w-none w-full min-h-screen mx-auto flex flex-col bg-[#F8F8F8] overflow-x-hidden pb-[120px] lg:pb-16 relative">
     <div class="w-full h-[184px] lg:h-[220px] absolute top-0 bg-[linear-gradient(244.6deg,_#7545FB_14.17%,_#2A3FCC_92.43%)]">
     </div>

@@ -57,11 +57,13 @@
                             {{ __('Hotel Bookings') }}
                         </x-nav-link>
                     @endcan
-                    @can('view hotel bookings')
-                        <x-nav-link :href="route('dashboard.my-bookings')" :active="request()->routeIs('dashboard.my-bookings')">
-                            {{ __('My Bookings') }}
-                        </x-nav-link>
-                    @endcan
+                    @unless ($isAdmin)
+                        @can('view hotel bookings')
+                            <x-nav-link :href="route('dashboard.my-bookings')" :active="request()->routeIs('dashboard.my-bookings')">
+                                {{ __('My Bookings') }}
+                            </x-nav-link>
+                        @endcan
+                    @endunless
                 </div>
             </div>
 
